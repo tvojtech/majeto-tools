@@ -65,7 +65,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <Header />
-        <Provider queryClient={queryClient.current}>{children}</Provider>
+        <Provider queryClient={queryClient.current}>
+          <div className="min-h-screen p-4">{children}</div>
+        </Provider>
         <TanStackDevtools
           config={{
             position: 'bottom-right',

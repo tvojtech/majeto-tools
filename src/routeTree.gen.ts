@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as Cm2pohodaIndexRouteImport } from './routes/cm2pohoda/index'
 import { Route as DemoTrpcTodoRouteImport } from './routes/demo/trpc-todo'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoTableRouteImport } from './routes/demo/table'
@@ -32,6 +33,11 @@ import { Route as DemoStartSsrDataOnlyRouteImport } from './routes/demo/start.ss
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Cm2pohodaIndexRoute = Cm2pohodaIndexRouteImport.update({
+  id: '/cm2pohoda/',
+  path: '/cm2pohoda/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoTrpcTodoRoute = DemoTrpcTodoRouteImport.update({
@@ -133,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/trpc-todo': typeof DemoTrpcTodoRoute
+  '/cm2pohoda': typeof Cm2pohodaIndexRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/demo/api/names': typeof DemoApiNamesRoute
@@ -154,6 +161,7 @@ export interface FileRoutesByTo {
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/trpc-todo': typeof DemoTrpcTodoRoute
+  '/cm2pohoda': typeof Cm2pohodaIndexRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/demo/api/names': typeof DemoApiNamesRoute
@@ -176,6 +184,7 @@ export interface FileRoutesById {
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/trpc-todo': typeof DemoTrpcTodoRoute
+  '/cm2pohoda/': typeof Cm2pohodaIndexRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/demo/api/names': typeof DemoApiNamesRoute
@@ -199,6 +208,7 @@ export interface FileRouteTypes {
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/demo/trpc-todo'
+    | '/cm2pohoda'
     | '/api/rpc/$'
     | '/api/trpc/$'
     | '/demo/api/names'
@@ -220,6 +230,7 @@ export interface FileRouteTypes {
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/demo/trpc-todo'
+    | '/cm2pohoda'
     | '/api/rpc/$'
     | '/api/trpc/$'
     | '/demo/api/names'
@@ -241,6 +252,7 @@ export interface FileRouteTypes {
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/demo/trpc-todo'
+    | '/cm2pohoda/'
     | '/api/rpc/$'
     | '/api/trpc/$'
     | '/demo/api/names'
@@ -263,6 +275,7 @@ export interface RootRouteChildren {
   DemoTableRoute: typeof DemoTableRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
   DemoTrpcTodoRoute: typeof DemoTrpcTodoRoute
+  Cm2pohodaIndexRoute: typeof Cm2pohodaIndexRoute
   ApiRpcSplatRoute: typeof ApiRpcSplatRoute
   ApiTrpcSplatRoute: typeof ApiTrpcSplatRoute
   DemoApiNamesRoute: typeof DemoApiNamesRoute
@@ -284,6 +297,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cm2pohoda/': {
+      id: '/cm2pohoda/'
+      path: '/cm2pohoda'
+      fullPath: '/cm2pohoda'
+      preLoaderRoute: typeof Cm2pohodaIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/trpc-todo': {
@@ -423,6 +443,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoTableRoute: DemoTableRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
   DemoTrpcTodoRoute: DemoTrpcTodoRoute,
+  Cm2pohodaIndexRoute: Cm2pohodaIndexRoute,
   ApiRpcSplatRoute: ApiRpcSplatRoute,
   ApiTrpcSplatRoute: ApiTrpcSplatRoute,
   DemoApiNamesRoute: DemoApiNamesRoute,
