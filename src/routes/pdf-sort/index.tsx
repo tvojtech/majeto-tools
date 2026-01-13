@@ -67,14 +67,29 @@ function RouteComponent() {
   const [isAskingPrefix, setIsAskingPrefix] = useState(false)
   const [prefixValue, setPrefixValue] = useState('')
   const [error, setError] = useState('')
+  const [containerWidth, setContainerWidth] = useState<number | null>(null)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const listRefs = useRef<Record<string, HTMLDivElement | null>>({})
+  const previewContainerRef = useRef<HTMLDivElement>(null)
 
   const pdfFiles = files.filter((f) => f.isPdf)
   const otherFiles = files.filter((f) => !f.isPdf)
   const selectedPdf = pdfFiles.find((f) => f.key === selectedPdfKey)
   const isAtLimit = files.length >= MAX_FILES
+
+  // Measure preview container width
+  useEffect(() => {
+    const updateWidth = () => {
+      if (previewContainerRef.current) {
+        setContainerWidth(previewContainerRef.current.offsetWidth - 32) // Subtract padding
+      }
+    }
+
+    updateWidth()
+    window.addEventListener('resize', updateWidth)
+    return () => window.removeEventListener('resize', updateWidth)
+  }, [selectedPdf])
 
   // Initialize metadata for new PDFs
   useEffect(() => {
@@ -389,7 +404,7 @@ function RouteComponent() {
   }, [numPages])
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
+    <div className="p-6 w-full">
       <h1 className="text-3xl font-bold mb-6">PDF Sort & Rename</h1>
 
       {/* Upload section */}
@@ -438,9 +453,9 @@ function RouteComponent() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="flex flex-col lg:flex-row gap-6">
           {/* PDF List */}
-          <div className="lg:col-span-1">
+          <div className="lg:w-1/4">
             <h2 className="text-xl font-semibold mb-4">
               PDFs ({pdfFiles.length})
             </h2>
@@ -543,60 +558,13 @@ function RouteComponent() {
           </div>
 
           {/* PDF Preview & Form */}
-          <div className="lg:col-span-2">
+          <div className="lg:w-3/4 flex flex-col gap-6">
             {selectedPdf ? (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Preview */}
-                <div>
-                  <h2 className="text-xl font-semibold mb-4">Preview</h2>
-                  <div className="border rounded p-4 bg-gray-50">
-                    <Document
-                      file={selectedPdf.url}
-                      onLoadSuccess={onDocumentLoadSuccess}
-                      loading={
-                        <div className="text-center py-8">Loading PDF...</div>
-                      }
-                      error={
-                        <div className="text-center py-8 text-red-600">
-                          Failed to load PDF
-                        </div>
-                      }
-                    >
-                      <Page
-                        pageNumber={pageNumber}
-                        width={400}
-                        renderTextLayer={true}
-                        renderAnnotationLayer={true}
-                      />
-                    </Document>
-                    <div className="flex items-center justify-between mt-4">
-                      <Button
-                        onClick={goToPrevPage}
-                        disabled={pageNumber <= 1}
-                        variant="outline"
-                        size="sm"
-                      >
-                        Previous
-                      </Button>
-                      <span className="text-sm">
-                        Page {pageNumber} of {numPages || '?'}
-                      </span>
-                      <Button
-                        onClick={goToNextPage}
-                        disabled={!numPages || pageNumber >= numPages}
-                        variant="outline"
-                        size="sm"
-                      >
-                        Next
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Form */}
+              <>
+                {/* Metadata Form */}
                 <div>
                   <h2 className="text-xl font-semibold mb-4">Metadata</h2>
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <Label htmlFor="distributor">Distributor *</Label>
                       <Input
@@ -644,36 +612,86 @@ function RouteComponent() {
                         }
                       />
                     </div>
-                    <div className="pt-4 text-sm text-gray-600">
-                      <p className="font-medium mb-2">Preview filename:</p>
-                      {(() => {
-                        const meta = metadata[selectedPdf.key]
-                        if (
-                          !meta ||
-                          !meta.distributor ||
-                          !meta.invoiceNumber ||
-                          !meta.date
-                        ) {
-                          return (
-                            <p className="text-gray-400 italic">
-                              Complete all fields to see preview
-                            </p>
-                          )
-                        }
-                        const sanitizedDist = sanitizeSegment(meta.distributor)
-                        const sanitizedInv = sanitizeSegment(meta.invoiceNumber)
-                        const sanitizedDate = meta.date.trim()
+                  </div>
+                  <div className="mt-4 text-sm text-gray-600">
+                    <p className="font-medium mb-2">Preview filename:</p>
+                    {(() => {
+                      const meta = metadata[selectedPdf.key]
+                      if (
+                        !meta ||
+                        !meta.distributor ||
+                        !meta.invoiceNumber ||
+                        !meta.date
+                      ) {
                         return (
-                          <p className="font-mono text-xs break-all">
-                            [prefix]-{sanitizedDist}-{sanitizedInv}-
-                            {sanitizedDate}.pdf
+                          <p className="text-gray-400 italic">
+                            Complete all fields to see preview
                           </p>
                         )
-                      })()}
+                      }
+                      const sanitizedDist = sanitizeSegment(meta.distributor)
+                      const sanitizedInv = sanitizeSegment(meta.invoiceNumber)
+                      const sanitizedDate = meta.date.trim()
+                      return (
+                        <p className="font-mono text-xs break-all">
+                          [prefix]-{sanitizedDist}-{sanitizedInv}-
+                          {sanitizedDate}.pdf
+                        </p>
+                      )
+                    })()}
+                  </div>
+                </div>
+
+                {/* Preview */}
+                <div>
+                  <h2 className="text-xl font-semibold mb-4">Preview</h2>
+                  <div
+                    ref={previewContainerRef}
+                    className="border rounded p-4 bg-gray-50 flex flex-col items-center"
+                  >
+                    <Document
+                      file={selectedPdf.url}
+                      onLoadSuccess={onDocumentLoadSuccess}
+                      loading={
+                        <div className="text-center py-8">Loading PDF...</div>
+                      }
+                      error={
+                        <div className="text-center py-8 text-red-600">
+                          Failed to load PDF
+                        </div>
+                      }
+                    >
+                      <Page
+                        pageNumber={pageNumber}
+                        width={containerWidth || undefined}
+                        renderTextLayer={true}
+                        renderAnnotationLayer={true}
+                      />
+                    </Document>
+                    <div className="flex items-center justify-between mt-4 w-full">
+                      <Button
+                        onClick={goToPrevPage}
+                        disabled={pageNumber <= 1}
+                        variant="outline"
+                        size="sm"
+                      >
+                        Previous
+                      </Button>
+                      <span className="text-sm">
+                        Page {pageNumber} of {numPages || '?'}
+                      </span>
+                      <Button
+                        onClick={goToNextPage}
+                        disabled={!numPages || pageNumber >= numPages}
+                        variant="outline"
+                        size="sm"
+                      >
+                        Next
+                      </Button>
                     </div>
                   </div>
                 </div>
-              </div>
+              </>
             ) : (
               <div className="text-center py-12 text-gray-500">
                 <p className="text-lg">
