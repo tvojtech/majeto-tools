@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PdfSortIndexRouteImport } from './routes/pdf-sort/index'
 import { Route as Cm2pohodaIndexRouteImport } from './routes/cm2pohoda/index'
 import { Route as DemoTrpcTodoRouteImport } from './routes/demo/trpc-todo'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
@@ -33,6 +34,11 @@ import { Route as DemoStartSsrDataOnlyRouteImport } from './routes/demo/start.ss
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PdfSortIndexRoute = PdfSortIndexRouteImport.update({
+  id: '/pdf-sort/',
+  path: '/pdf-sort/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Cm2pohodaIndexRoute = Cm2pohodaIndexRouteImport.update({
@@ -140,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/trpc-todo': typeof DemoTrpcTodoRoute
   '/cm2pohoda': typeof Cm2pohodaIndexRoute
+  '/pdf-sort': typeof PdfSortIndexRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/demo/api/names': typeof DemoApiNamesRoute
@@ -162,6 +169,7 @@ export interface FileRoutesByTo {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/trpc-todo': typeof DemoTrpcTodoRoute
   '/cm2pohoda': typeof Cm2pohodaIndexRoute
+  '/pdf-sort': typeof PdfSortIndexRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/demo/api/names': typeof DemoApiNamesRoute
@@ -185,6 +193,7 @@ export interface FileRoutesById {
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/trpc-todo': typeof DemoTrpcTodoRoute
   '/cm2pohoda/': typeof Cm2pohodaIndexRoute
+  '/pdf-sort/': typeof PdfSortIndexRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/demo/api/names': typeof DemoApiNamesRoute
@@ -209,6 +218,7 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/demo/trpc-todo'
     | '/cm2pohoda'
+    | '/pdf-sort'
     | '/api/rpc/$'
     | '/api/trpc/$'
     | '/demo/api/names'
@@ -231,6 +241,7 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/demo/trpc-todo'
     | '/cm2pohoda'
+    | '/pdf-sort'
     | '/api/rpc/$'
     | '/api/trpc/$'
     | '/demo/api/names'
@@ -253,6 +264,7 @@ export interface FileRouteTypes {
     | '/demo/tanstack-query'
     | '/demo/trpc-todo'
     | '/cm2pohoda/'
+    | '/pdf-sort/'
     | '/api/rpc/$'
     | '/api/trpc/$'
     | '/demo/api/names'
@@ -276,6 +288,7 @@ export interface RootRouteChildren {
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
   DemoTrpcTodoRoute: typeof DemoTrpcTodoRoute
   Cm2pohodaIndexRoute: typeof Cm2pohodaIndexRoute
+  PdfSortIndexRoute: typeof PdfSortIndexRoute
   ApiRpcSplatRoute: typeof ApiRpcSplatRoute
   ApiTrpcSplatRoute: typeof ApiTrpcSplatRoute
   DemoApiNamesRoute: typeof DemoApiNamesRoute
@@ -297,6 +310,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pdf-sort/': {
+      id: '/pdf-sort/'
+      path: '/pdf-sort'
+      fullPath: '/pdf-sort'
+      preLoaderRoute: typeof PdfSortIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cm2pohoda/': {
@@ -444,6 +464,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
   DemoTrpcTodoRoute: DemoTrpcTodoRoute,
   Cm2pohodaIndexRoute: Cm2pohodaIndexRoute,
+  PdfSortIndexRoute: PdfSortIndexRoute,
   ApiRpcSplatRoute: ApiRpcSplatRoute,
   ApiTrpcSplatRoute: ApiTrpcSplatRoute,
   DemoApiNamesRoute: DemoApiNamesRoute,
